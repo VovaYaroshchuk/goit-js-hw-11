@@ -1,25 +1,17 @@
 import Notiflix from 'notiflix';
-const axios = require('axios').default;
+import { fetchImages } from './api';
 import SimpleLightbox from "simplelightbox";
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const searchForm = document.querySelector('#search-form')
 const gallery = document.querySelector('.gallery');
 const loadMoreBtn = document.querySelector('.load-more');
-const API_KEY ='28211530-9aacd352b3f11c956fdc5a9f9';
+
 let simpleLightBox
 let query = ''
 let page = 1
 
 const perPage = 40
-axios.defaults.baseURL = 'https://pixabay.com/api/'
-
-
-async function fetchImages(query, page, perPage) {
-  const response = await axios.get(
-    `?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${perPage}`,
-  )
-  return response
-}
 
 function renderGallery(images) {
   const markup = images
@@ -66,7 +58,7 @@ function onSearchForm(e) {
         alertNoImagesFound()
       } else {
         renderGallery(data.hits)
-        simpleLightBox = new SimpleLightbox('.gallery a').refresh()
+        simpleLightBox = new SimpleLightbox('.gallery a', { captionsData: "alt", captionDelay: "250" }).refresh()
         alertImagesFound(data)
 
         if (data.totalHits > perPage) {
@@ -84,7 +76,7 @@ function onLoadMoreBtn() {
   fetchImages(query, page, perPage)
     .then(({ data }) => {
       renderGallery(data.hits)
-      simpleLightBox = new SimpleLightbox('.gallery a').refresh()
+      simpleLightBox = new SimpleLightbox('.gallery a', { captionsData: "alt", captionDelay: "250" }).refresh()
 
       const totalPages = Math.ceil(data.totalHits / perPage)
 
